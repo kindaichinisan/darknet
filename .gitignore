@@ -68,3 +68,7 @@ uselib_track
 darknet
 kmeansiou
 vcpkg/
+*.zip
+/manual_dl_release
+weights/yolov4.conv.137
+Makefile

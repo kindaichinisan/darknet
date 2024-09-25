@@ -74,9 +74,9 @@ OS := $(shell uname)
 # Nvidia H100
 # ARCH= -gencode arch=compute_90,code=[sm_90,compute_90]
 
-VPATH=./src/
+VPATH=.\src\
 EXEC=darknet
-OBJDIR=./obj/
+OBJDIR=.\obj\
 
 ifeq ($(LIBSO), 1)
 LIBNAMESO=libdarknet.so
@@ -93,7 +93,7 @@ CPP=g++ -std=c++11
 NVCC=nvcc
 OPTS=-Ofast
 LDFLAGS= -lm -pthread
-COMMON= -Iinclude/ -I3rdparty/stb/include
+COMMON= -Iinclude\ -I3rdparty\stb\include
 CFLAGS=-Wall -Wfatal-errors -Wno-unused-result -Wno-unknown-pragmas -fPIC -rdynamic
 
 ifeq ($(DEBUG), 1)
@@ -116,8 +116,8 @@ endif
 ifeq ($(OPENCV), 1)
 COMMON+= -DOPENCV
 CFLAGS+= -DOPENCV
-LDFLAGS+= `pkg-config --libs opencv4 2> /dev/null || pkg-config --libs opencv`
-COMMON+= `pkg-config --cflags opencv4 2> /dev/null || pkg-config --cflags opencv`
+LDFLAGS+= `pkg-config --libs opencv4 2> \dev\null || pkg-config --libs opencv`
+COMMON+= `pkg-config --cflags opencv4 2> \dev\null || pkg-config --cflags opencv`
 endif
 
 ifeq ($(OPENMP), 1)
@@ -130,23 +130,23 @@ LDFLAGS+= -lgomp
 endif
 
 ifeq ($(GPU), 1)
-COMMON+= -DGPU -I/usr/local/cuda/include/
+COMMON+= -DGPU -I\usr\local\cuda\include\
 CFLAGS+= -DGPU
 ifeq ($(OS),Darwin) #MAC
-LDFLAGS+= -L/usr/local/cuda/lib -lcuda -lcudart -lcublas -lcurand
+LDFLAGS+= -L\usr\local\cuda\lib -lcuda -lcudart -lcublas -lcurand
 else
-LDFLAGS+= -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand
+LDFLAGS+= -L\usr\local\cuda\lib64 -lcuda -lcudart -lcublas -lcurand
 endif
 endif
 
 ifeq ($(CUDNN), 1)
 COMMON+= -DCUDNN
 ifeq ($(OS),Darwin) #MAC
-CFLAGS+= -DCUDNN -I/usr/local/cuda/include
-LDFLAGS+= -L/usr/local/cuda/lib -lcudnn
+CFLAGS+= -DCUDNN -I\usr\local\cuda\include
+LDFLAGS+= -L\usr\local\cuda\lib -lcudnn
 else
-CFLAGS+= -DCUDNN -I/usr/local/cudnn/include
-LDFLAGS+= -L/usr/local/cudnn/lib64 -lcudnn
+CFLAGS+= -DCUDNN -I\usr\local\cudnn\include
+LDFLAGS+= -L\usr\local\cudnn\lib64 -lcudnn
 endif
 endif
 
@@ -157,12 +157,12 @@ ARCH+= -gencode arch=compute_70,code=[sm_70,compute_70]
 endif
 
 ifeq ($(ZED_CAMERA), 1)
-CFLAGS+= -DZED_STEREO -I/usr/local/zed/include
+CFLAGS+= -DZED_STEREO -I\usr\local\zed\include
 ifeq ($(ZED_CAMERA_v2_8), 1)
-LDFLAGS+= -L/usr/local/zed/lib -lsl_core -lsl_input -lsl_zed
+LDFLAGS+= -L\usr\local\zed\lib -lsl_core -lsl_input -lsl_zed
 #-lstdc++ -D_GLIBCXX_USE_CXX11_ABI=0
 else
-LDFLAGS+= -L/usr/local/zed/lib -lsl_zed
+LDFLAGS+= -L\usr\local\zed\lib -lsl_zed
 #-lstdc++ -D_GLIBCXX_USE_CXX11_ABI=0
 endif
 endif
@@ -174,18 +174,18 @@ OBJ+=convolutional_kernels.o activation_kernels.o im2col_kernels.o col2im_kernel
 endif
 
 OBJS = $(addprefix $(OBJDIR), $(OBJ))
-DEPS = $(wildcard src/*.h) Makefile include/darknet.h
+DEPS = $(wildcard src\*.h) Makefile include\darknet.h
 
 all: $(OBJDIR) backup results setchmod $(EXEC) $(LIBNAMESO) $(APPNAMESO)
 
 ifeq ($(LIBSO), 1)
 CFLAGS+= -fPIC
 
-$(LIBNAMESO): $(OBJDIR) $(OBJS) include/yolo_v2_class.hpp src/yolo_v2_class.cpp
-	$(CPP) -shared -std=c++11 -fvisibility=hidden -DLIB_EXPORTS $(COMMON) $(CFLAGS) $(OBJS) src/yolo_v2_class.cpp -o $@ $(LDFLAGS)
+$(LIBNAMESO): $(OBJDIR) $(OBJS) include\yolo_v2_class.hpp src\yolo_v2_class.cpp
+	$(CPP) -shared -std=c++11 -fvisibility=hidden -DLIB_EXPORTS $(COMMON) $(CFLAGS) $(OBJS) src\yolo_v2_class.cpp -o $@ $(LDFLAGS)
 
-$(APPNAMESO): $(LIBNAMESO) include/yolo_v2_class.hpp src/yolo_console_dll.cpp
-	$(CPP) -std=c++11 $(COMMON) $(CFLAGS) -o $@ src/yolo_console_dll.cpp $(LDFLAGS) -L ./ -l:$(LIBNAMESO)
+$(APPNAMESO): $(LIBNAMESO) include\yolo_v2_class.hpp src\yolo_console_dll.cpp
+	$(CPP) -std=c++11 $(COMMON) $(CFLAGS) -o $@ src\yolo_console_dll.cpp $(LDFLAGS) -L .\ -l:$(LIBNAMESO)
 endif
 
 $(EXEC): $(OBJS)
